@@ -1,3 +1,7 @@
+# Copyright notes
+
+This code is almost Robert's Oostenveld great job of implementing ArtNet server on EP8266. I just modified this to create a first version of TheObject LED controller. However ESP8266 IO seems too slow to me. It was noticed by Robert and I check it. At some point ESP8266 chokes with data flow. It could be not so often, but force me to move to Linux microcomputers and implement my project with Open Lighting Architecture.
+
 # Overview
 
 This sketch implements a WiFi module that uses the Art-Net protocol over a wireless connection to control wired stage lighting fixtures/lamps that are DMX512 compatible. It listens to incoming Art-Net packets and forwards a single universe to DMX512. It features over-the-air (OTA) configuration of the wifi network that it connects to, configuration of the universe that is forwarded, and monitoring of the incoming packets and the frame rate.

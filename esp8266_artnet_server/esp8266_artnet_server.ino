@@ -17,13 +17,16 @@
 #include "setup_ota.h"
 #include "send_break.h"
 
-#define THEOBJECT_SUMM_BYTES 10
+//#define THEOBJECT_SUMM_BYTES 10
 #define THEOBJECT_LED_COUNT 20
+#define THEOBJECT_LED_GROUPS_COUNT 5
+#define THEOBJECT_GROUP_SIZE 4
+#define THEOBJECT_PACKAGE_SIZE  1 + THEOBJECT_GROUP_SIZE + 1 // address|summ + LEDS + null
 #define ENABLE_THEOBJECT
 
 //#define ENABLE_SERIAL_DEBUG
 #ifdef ENABLE_SERIAL_DEBUG
-# define SERIAL_DEBUG(x)   { Serial.print(x);a(); }
+# define SERIAL_DEBUG(x)   { Serial.print(x); }
 # define SERIAL_DEBUGLN(x)   { Serial.println(x); }
 # define SERIAL_DEBUGLN_ Serial.println();
 #else
@@ -71,7 +74,7 @@ struct {
 // keep track of the timing of the function calls
 long tic_loop = 0, tic_fps = 0, tic_packet = 0, tic_web = 0;
 
-void setTheObjectLedLine (uint8_t * data) {
+/* void setTheObjectLedLine (uint8_t * data) {
   uint8_t buffer[THEOBJECT_LED_COUNT + THEOBJECT_SUMM_BYTES + 1];
   for (uint8_t i = 0; i < THEOBJECT_LED_COUNT; i++) {
     buffer[i] = data[i] >= 254 ? 255 : (1 + data[i]);
@@ -86,7 +89,22 @@ void setTheObjectLedLine (uint8_t * data) {
   buffer[THEOBJECT_LED_COUNT + THEOBJECT_SUMM_BYTES] = 0;
    
   Serial.write(buffer, THEOBJECT_LED_COUNT + THEOBJECT_SUMM_BYTES + 1);
-  //Serial.flush();
+}*/
+
+void setTheObjectLedLine (uint8_t * data) {
+  for (uint8_t groupId = 0; groupId < THEOBJECT_LED_GROUPS_COUNT; groupId++) {
+    uint8_t buffer[THEOBJECT_PACKAGE_SIZE];
+    uint8_t summ = 0;
+    buffer[0] = groupId << 4 | 0x80;
+    for (uint8_t i = 0; i < THEOBJECT_GROUP_SIZE; i++) {  
+      uint8_t value = data[i + THEOBJECT_GROUP_SIZE * groupId];
+      buffer[i+1] = value >= 254 ? 255 : (1 + value);
+      summ ^= buffer[i+1];
+    }
+    buffer[0] |= (summ & 0x0f) ^ (summ >> 4);
+    buffer[THEOBJECT_PACKAGE_SIZE - 1] = 0;   
+    Serial.write(buffer, THEOBJECT_PACKAGE_SIZE);
+  }
 }
 
 //this will be called for each UDP packet received
@@ -323,9 +341,9 @@ void loop() {
   } else {
     if (testMode) {
       int value = (analogRead(POTENTIOMETER)/4);
-      if (value> 255) value = 255;
+      if (value > 255) value = 255;
       for (char i = 0; i < THEOBJECT_LED_COUNT; i++) {
-        ledsTheObject[i] = value;
+        ledsTheObject[i] = (unsigned char)((ledsTheObject[i] * 7 + value)/8);
       }
     }
     waveMode = false;
