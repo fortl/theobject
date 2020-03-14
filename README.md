@@ -38,7 +38,7 @@
   <li><a href="https://raw.githubusercontent.com/fortl/theobject/master/images/unit-layout.png">unit module PCB</a> - 20pcs (I ordered at JLCPCB)</li>
   <li>Charger connectors - 20pcs</li>
   <li>Power buttons - 20pcs</li>
-  <li>Square aluminium pipe - 40x40x2000 - cut into 20pcs</li>
+  <li>Square aluminium pipe - 40x40x2000mm - cut into 20pcs</li>
   <li>Plastic chair caps - 40pcs</li>
   <li>25A 5V charger - 1pc</li>
   <li>Wires</li>  
