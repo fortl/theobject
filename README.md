@@ -3,7 +3,7 @@
 <p>TheObject is a light controller which consist of 20 small autonomous LED units. It's driving by ArtNet protocol and easly connects to VJs software.</p>
 
 <h1>Let's take a look!</h1>
-<p>Check this Youtube video -></p>
+<p>Check my Youtube video -></p>
 <div>
   <a href="https://www.youtube.com/watch?v=r2PG3HvHW_Q"><img src="https://img.youtube.com/vi/r2PG3HvHW_Q/0.jpg" alt="Radio LED controller"></a>
 </div>
