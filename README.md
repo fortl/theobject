@@ -23,4 +23,5 @@
 <h3>Gate</h3>
 <p>I've created 2 gate implementations.</p> 
 <p>The first one was based on ESP8266 chip and <a href='https://robertoostenveld.nl/art-net-to-dmx512-with-esp8266/'>Robert Oostenveld's ArtNet to DMX server</a>. I actually repeated Robert's project, connected a JDY-40 to UART and add code to translate DMX packages to my internal units protocol. My code is available in git. The solution was very cheap and easy. Unfortunately, ESP8266 too slow UART IO. That's enough for some cases, but I focused to fix the lags.</p>
-<p>So the second solution I've made uses OrangePi Zero (or any linux computer) as a gate. Thanx to <a href="https://www.openlighting.org/">Open Lighting Project</a> and it fabulous<a href="https://www.openlighting.org/ola/developer-documentation/python-api/">Python API</a> At the moment the only gate's code is ola-plugin.</a>
+<p>So the second solution I've made uses OrangePi Zero (or any linux computer) as a gate. Thanx to <a href="https://www.openlighting.org/">Open Lighting Project</a> and it fabulous <a href="https://www.openlighting.org/ola/developer-documentation/python-api/">Python API</a> At the moment the only gate's code is ola-plugin. 
+<p>With the OrangePi gate I achived 15fps in real cases, which is good enough for my purposes</p>
