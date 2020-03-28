@@ -30,6 +30,7 @@ class OSCEffectsMultiToggle:
         unit = int(unit) - 1 + block['index']*self.units_per_block
         group = int(group)-1
         self.set_value(unit, group, value)
+        return None
 
     def set_value(self, unit: int, target_group: int, value: float):
         self.values[target_group][unit] = value

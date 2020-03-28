@@ -46,17 +46,17 @@ mode_groups = OSCModesMultiToggle(
     units_count = theobject.LED_COUNT, 
     groups_count = MODE_GROUPS_COUNT, 
     address = 'modes') 
-master_brightness = OSCValue(1, 'master', updateable=True)
-blackout = OSCValue(0, 'blackout', updateable=True)
+master_brightness = OSCValue(1, 'master')
+blackout = OSCValue(0, 'blackout')
 mode_swithcher = OSCModeSwitchers(MODE_GROUPS_COUNT, 
     [ 'artnet', 'none', 'light', 'strobo', 'lfo', 'strips' ])
 mode_brightness = OSCValue(1, 'mode/brightness')
 strobo_speed = OSCValue(1, 'mode/stroboSpeed')
-lfo_scale = OSCValue(1, 'mode/lfoScale')
-lfo_speed = OSCValue(1, 'mode/lfoSpeed')
-strips_scale = OSCValue(1, 'mode/stripsScale')
-strips_speed = OSCValue(1, 'mode/stripsSpeed')
-strips_width = OSCValue(1, 'mode/stripsWidth')
+lfo_scale = OSCValue(.75, 'mode/lfoScale')
+lfo_speed = OSCValue(.2, 'mode/lfoSpeed')
+strips_scale = OSCValue(.75, 'mode/stripsScale')
+strips_speed = OSCValue(.5, 'mode/stripsSpeed')
+strips_width = OSCValue(.5, 'mode/stripsWidth')
 flash1_switcher = OSCEffectSwitcher(EFFECT_GROUPS_COUNT, 'flash', groups_selector=effect_groups)
 controls = OSCControlsCollection().add(
     effect_groups, 
@@ -100,30 +100,29 @@ async def periodic_units_updates():
 def artnet_data(data):
     modes['artnet'].set_data(data)
 
-def update_osc_interface_data():
-    global osc_update_timer_handle, osc_update_time
-    osc_update_time = time.time()
-    osc_update_timer_handle = None
-    for message in controls.serialize():
-        # print(OSC_ADDRESS_PREFIX + message['address'])
+def send_osc_messages(osc_messages):
+    for message in osc_messages:
+        # print(OSC_ADDRESS_PREFIX + message['address'], message['values'])
         osc_client.send_message(
             OSC_ADDRESS_PREFIX + message['address'], 
             message['values'],
         )
 
-def debounce_update_osc():
+def debounce_messages_osc(osc_messages):
     global osc_update_timer_handle, osc_update_time
     if time.time() - osc_update_time < OSC_UPDATE_DEBOUNCE:
         if osc_update_timer_handle:
             osc_update_timer_handle.cancel()
         loop = asyncio.get_event_loop()
-        osc_update_timer_handle = loop.call_later(OSC_UPDATE_DEBOUNCE, update_osc_interface_data)
+        osc_update_timer_handle = loop.call_later(OSC_UPDATE_DEBOUNCE, debounce_messages_osc, osc_messages)
         return
-    update_osc_interface_data()
+    osc_update_time = time.time()
+    osc_update_timer_handle = None
+    send_osc_messages(osc_messages)
 
 async def periodic_osc_updates():
     while True:
-        update_osc_interface_data()
+        send_osc_messages(controls.serialize())
         await asyncio.sleep(OSC_UPDATE_INTERVAL) 
 
 def osc_handler(client_address, address, *args):
@@ -133,8 +132,9 @@ def osc_handler(client_address, address, *args):
         return
     address = address[len(OSC_ADDRESS_PREFIX):]
     #print(f"osc {address}: {args}")
-    controls.handle_message(address, args[0])
-    debounce_update_osc()
+    osc_messages = controls.handle_message(address, args[0])
+    if osc_messages:
+        debounce_messages_osc(osc_messages)
 
 def blocking_artnet():
     wrapper = ClientWrapper()
@@ -156,5 +156,5 @@ async def main_loop():
 
 def start():
     print('OpenSoundControl server port:', osc_port)
-    update_osc_interface_data()
+    send_osc_messages(controls.serialize())
     asyncio.run(main_loop())

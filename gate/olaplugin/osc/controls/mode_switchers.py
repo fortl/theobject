@@ -43,6 +43,7 @@ class OSCModeSwitchers:
             for group in self.groups.values():
                 group.discard(group_id)
             self.groups[mode['address']].add(group_id)
+        return self.serialize()
 
     def serialize(self):
         return self.modes

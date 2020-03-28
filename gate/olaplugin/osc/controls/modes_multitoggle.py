@@ -11,3 +11,7 @@ class OSCModesMultiToggle(OSCEffectsMultiToggle):
         for group in range(self.groups_count):
             self.values[group][unit] = 0    
         self.values[target_group][unit] = 1
+
+    def handle_message(self, address: str, value: float):
+        super().handle_message(address, value)
+        return self.serialize()

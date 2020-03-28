@@ -28,6 +28,7 @@ class OSCEffectSwitcher:
             else:
                 self.groups.discard(group_id)
                 self.values[group_id] = 0
+        return None
 
     def serialize(self):
         return [{'address': self.address, 'values': self.values}]
