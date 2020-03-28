@@ -57,14 +57,18 @@ lfo_speed = OSCValue(.2, 'mode/lfoSpeed')
 strips_scale = OSCValue(.75, 'mode/stripsScale')
 strips_speed = OSCValue(.5, 'mode/stripsSpeed')
 strips_width = OSCValue(.5, 'mode/stripsWidth')
-flash1_switcher = OSCEffectSwitcher(EFFECT_GROUPS_COUNT, 'flash', groups_selector=effect_groups)
+flash1_switcher = OSCEffectSwitcher(EFFECT_GROUPS_COUNT, 'flash1', groups_selector=effect_groups)
+flash2_switcher = OSCEffectSwitcher(EFFECT_GROUPS_COUNT, 'flash2', groups_selector=effect_groups)
+flash1_fade = OSCValue(.1, 'effects/flash1')
+flash2_fade = OSCValue(.1, 'effects/flash2')
 controls = OSCControlsCollection().add(
     effect_groups, 
     mode_brightness, strobo_speed,
     lfo_scale, lfo_speed,
     strips_scale, strips_speed, strips_width,
     mode_groups, mode_swithcher,
-    flash1_switcher, 
+    flash1_switcher, flash2_switcher,
+    flash1_fade, flash2_fade, 
     master_brightness, blackout)
 
 modes = {
@@ -76,7 +80,11 @@ modes = {
     'strips': StripsMode(theobject.LED_COUNT, 
         brightness=mode_brightness, speed=strips_speed, scale=strips_scale, width=strips_width),
 }
-effects = [FlashEffect(theobject.LED_COUNT, controll=flash1_switcher)]
+
+effects = [
+    FlashEffect(theobject.LED_COUNT, controll=flash1_switcher, fade=flash1_fade),
+    FlashEffect(theobject.LED_COUNT, controll=flash2_switcher, fade=flash2_fade),
+]
 
 def update_units():
     data = [0]*theobject.LED_COUNT
