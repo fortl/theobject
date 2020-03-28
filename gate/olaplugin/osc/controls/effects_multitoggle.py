@@ -11,9 +11,12 @@ class OSCEffectsMultiToggle:
         self.groups_count = groups_count
         self.blocks = [{'address': address + 'Block' + str(i+1), 'index': i} for i in range(blocks_count)]
         self.values = [[0 for i in range(units_count)] for j in range(groups_count)]
-        for i in range(self.units_count):
-            self.values[0][i] = 1
+        self.init_values()
 
+    def init_values(self):
+        for i in range(int(self.units_count/2)):
+            self.values[0][i*2] = 1
+            self.values[1][i*2+1] = 1
 
     def osc_address_prefixes(self):
         return [block['address'] for block in self.blocks]
