@@ -19,7 +19,6 @@
 <p>The main goal was to make the controller cheap as possible. That's why I choose AVR ATTiny2313 + JDY-40</p>
 <p>JDY-* is a CC2541-based family of modules, and JDY-40 is a transparent UART-wireless trasmitter. It doesn't support broadcasting officially, but I check this mode and it works well for my goals with some limitations.</p>
 
-<img src="https://raw.githubusercontent.com/fortl/theobject/master/images/theobject-single-unit.png"/>
 <h3>Gate</h3>
 <p>I've created 2 gate implementations.</p> 
 <p>The first one was based on ESP8266 chip and <a href='https://robertoostenveld.nl/art-net-to-dmx512-with-esp8266/'>Robert Oostenveld's ArtNet to DMX server</a>. I actually repeated Robert's project, connected a JDY-40 to UART and add code to translate DMX packages to my internal units protocol. My code is available in git. The solution was very cheap and easy. Unfortunately, ESP8266 too slow UART IO. That's enough for some cases, but I focused to fix the lags.</p>
@@ -35,7 +34,7 @@
   <li>18650 lithium batteries - 20pcs</li>
   <li>18650 holders - 20pcs</li>
   <li>TP4056 lithium charger module - 20pcs</li>
-  <li><a href="https://raw.githubusercontent.com/fortl/theobject/master/images/unit-layout.png">unit module PCB</a> - 20pcs (I ordered at JLCPCB)</li>
+  <li><a href="https://raw.githubusercontent.com/fortl/theobject/master/images/layouts/unit-nrf24-layout.png">unit module PCB</a> - 20pcs (I ordered at JLCPCB)</li>
   <li>Charger connectors - 20pcs</li>
   <li>Power buttons - 20pcs</li>
   <li>Square aluminium pipe - 40x40x2000mm - cut into 20pcs</li>
