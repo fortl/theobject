@@ -14,6 +14,10 @@
 <img src="https://raw.githubusercontent.com/fortl/theobject/master/images/theobject-main-scheme.png"/>
 <p>The gate receives ArtNet bytes flow, pack it into small wireless packages and broadcasts to the units by NRF24 protocol. They receive data packages from the gate, check it, pick the LED value (address is hardcoded for a single unit). Then the unit's microcontroller manage the LED brightnes by PWM and constant current driver.</p>
 
+<h2>Interface</h2>
+<p>Interface made with <a href="https://hexler.net/products/touchosc">TouchOSC</a>.</p>
+<img width="400" src="https://raw.githubusercontent.com/fortl/theobject/master/interface/interface.png"/>
+
 <h2>What's inside?</h2>
 <h3>Unit</h3>
 <p>The main goal was to make the controller cheap as possible. That's why I choose ATTiny + NFR24 + OrangePiZero stack.</p>
@@ -24,7 +28,6 @@
 <p>The Gate is OrangePi Zero (or any linux computer). 
 <p>It drives leds, and listens to Artnet, interface UDP data.
 Artnet integration is OLA server with a plugin. <a href="https://www.openlighting.org/">Open Lighting Project</a> is a flexible solution to manage show's lights&effects.</p>
-<p>Interface made with <a href="https://hexler.net/products/touchosc">TouchOSC</a>. The gate connects two ways by OSC UDP protocol with your phone/tablet.</p>
 
 <h1>Components</h1>
 <ul>
