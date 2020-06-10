@@ -1,0 +1,43 @@
+#!/bin/sh -e
+IPTABLES="/sbin/iptables"
+WWW="80"
+
+$IPTABLES -t mangle -F
+$IPTABLES -F
+
+$IPTABLES -A INPUT -i lo -j ACCEPT
+#ssh
+$IPTABLES -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+# разрешаем серверу и клиентам dns гугла
+$IPTABLES -A INPUT -s 8.8.8.8 -j ACCEPT
+$IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# создаем правило интернет
+$IPTABLES -N internet -t mangle
+$IPTABLES -t mangle -A PREROUTING -j internet
+#маркируем все пакеты
+$IPTABLES -t mangle -A internet -j MARK --set-mark 99
+# все маркированные пакеты которые идут на 80 порт отправляем на наш сервер
+$IPTABLES -t nat -A PREROUTING -m mark --mark 99 -p tcp --dport 80 -j DNAT --to-destination 192.168.42.1
+#дроппаем все маркированное
+#$IPTABLES -t filter -A FORWARD -m mark --mark 99 -j DROP
+#dns
+$IPTABLES -t filter -A INPUT -s 8.8.8.8 -j ACCEPT
+#http
+$IPTABLES -t filter -A INPUT -p tcp --dport 80 -j ACCEPT
+#port dns
+$IPTABLES -t filter -A INPUT -p udp --dport 53 -j ACCEPT
+#drop
+$IPTABLES -t filter -A INPUT -m mark --mark 99 -j DROP
+echo "1" > /proc/sys/net/ipv4/ip_forward
+#настройка нат
+$IPTABLES -A FORWARD -i eth0 -o eth0:1 -m state --state ESTABLISHED,RELATED -j ACCEPT
+$IPTABLES -A FORWARD -i eth0:1 -o eth0 -j ACCEPT
+$IPTABLES -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+iw phy phy0 interface add wlan1 type station 
+dhcpcd wlan1   
+
+cd /root/theobject/gate/
+python3 -m olaplugin &
+exit 0
