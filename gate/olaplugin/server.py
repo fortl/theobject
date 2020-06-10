@@ -10,14 +10,21 @@ from pythonosc.udp_client import SimpleUDPClient
 import olaplugin.theobject as theobject
 import olaplugin.net_helper as net_helper
 import olaplugin.interface as interface
+from olaplugin.routes import setup_routes
+from olaplugin.captive_portal import captive_portal
 
+BASE_DIR = pathlib.Path(__file__).parent
 OSC_UPDATE_INTERVAL = 2
 OSC_ADDRESS_PREFIX = '/theobject/'
 OSC_UPDATE_DEBOUNCE = .2
 osc_port = 9000
 osc_client_ip = '255.255.255.255'
 osc_client_port = 9000
-osc_client = SimpleUDPClient(osc_client_ip, osc_client_port, allow_broadcast=True)
+osc_clients = []
+for i in net_helper.interfaces: 
+    osc_client = SimpleUDPClient(osc_client_ip, osc_client_port, allow_broadcast=True)
+    osc_client._sock.setsockopt(socket.SOL_SOCKET, 25, str(i + '\0').encode('utf-8'))
+    osc_clients.append(osc_client)
 osc_ip = '0.0.0.0'
 osc_update_timer_handle = None
 osc_update_time = time.time()
@@ -35,11 +42,12 @@ def artnet_data(data):
     interface.artnet_channel.set_data(data)
 
 def send_osc_feedback(osc_feedback):
-    for message in osc_feedback.messages:
-        osc_client.send_message(
-            OSC_ADDRESS_PREFIX + message['address'], 
-            message['values'],
-        )
+    for osc_client in osc_clients:
+        for message in osc_feedback.messages:
+            osc_client.send_message(
+                OSC_ADDRESS_PREFIX + message['address'], 
+                message['values'],
+            )
 
 def debounce_messages_osc(osc_feedback):
     global osc_update_timer_handle, osc_update_time
