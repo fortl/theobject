@@ -2,6 +2,7 @@ import serial
 import time
 import sys
 from array import array
+import errno
 
 SERIAL_PORT = '/dev/ttyS2'
 GROUPS_COUNT = 5
@@ -30,8 +31,14 @@ def set_leds(leds):
             buf[0] ^= led_value
         buf[0] = (buf[0] & 0x0f) ^ (buf[0] >> 4)
         buf[0] |= (group_id << 4) | 0x80
-        leds_serial.write(buf)
-        leds_serial.flush()
+        try:
+            leds_serial.write(buf)
+            # leds_serial.flush()
+        except IOError as e:
+            if e.errno == errno.EINTR:
+                continue
+            else:
+                raise
 
 def strobescope():
     value = 0

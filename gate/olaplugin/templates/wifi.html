@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block body %}
+  <form method="POST">
+  <h2>Wifi networks</h2>
+    <select name="ssid" class="feedback-input">
+      <option value="">-- SSID</option>
+      {% for item in ssid_list %}
+      <option value="{{ item.ssid }}">{{ item.ssid }}</option>
+      {% endfor %}
+      </select>
+      <input type="submit" value="SUBMIT"/>
+  </form>
+{% endblock %}

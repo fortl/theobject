@@ -1,6 +1,11 @@
 import asyncio
 import concurrent.futures
 import time
+import socket
+from aiohttp import web
+import aiohttp_jinja2
+import jinja2
+import pathlib
 
 from ola.ClientWrapper import ClientWrapper
 from pythonosc.osc_server import AsyncIOOSCUDPServer
@@ -83,7 +88,7 @@ def blocking_artnet():
     client.RegisterUniverse(artnet_universe, client.REGISTER, artnet_data)
     wrapper.Run()
 
-async def main_loop():
+async def start_osc_service(app):
     loop = asyncio.get_event_loop()
     loop.create_task(periodic_units_updates())
     loop.create_task(periodic_osc_updates())
@@ -91,11 +96,20 @@ async def main_loop():
     dispatcher.set_default_handler(osc_handler, needs_reply_address=True)
     server = AsyncIOOSCUDPServer((osc_ip, osc_port), dispatcher, loop)
     await server.create_serve_endpoint()  # Create datagram endpoint and start serving
-    with concurrent.futures.ThreadPoolExecutor() as pool:
-        await loop.run_in_executor(pool, blocking_artnet)
-        loop.stop()
+
+async def start_artnet_service(app):
+    loop = asyncio.get_event_loop()
+    pool = concurrent.futures.ThreadPoolExecutor()
+    loop.run_in_executor(pool, blocking_artnet)
 
 def start():
     print('OpenSoundControl server port:', osc_port)
     send_osc_feedback(interface.serialize())
-    asyncio.run(main_loop())
+    app = web.Application(middlewares=[captive_portal])
+    setup_routes(app)
+    print(BASE_DIR);
+    aiohttp_jinja2.setup(app,
+        loader=jinja2.FileSystemLoader(str(BASE_DIR  / 'templates')))
+    app.on_startup.append(start_osc_service)
+    app.on_startup.append(start_artnet_service)
+    web.run_app(app, port=80)
