@@ -23,21 +23,27 @@ $IPTABLES -t nat -A PREROUTING -m mark --mark 99 -p tcp --dport 80 -j DNAT --to-
 #$IPTABLES -t filter -A FORWARD -m mark --mark 99 -j DROP
 #dns
 $IPTABLES -t filter -A INPUT -s 8.8.8.8 -j ACCEPT
+$IPTABLES -t filter -A INPUT -s 8.8.4.4 -j ACCEPT
 #http
 $IPTABLES -t filter -A INPUT -p tcp --dport 80 -j ACCEPT
 #port dns
 $IPTABLES -t filter -A INPUT -p udp --dport 53 -j ACCEPT
 #drop
-$IPTABLES -t filter -A INPUT -m mark --mark 99 -j DROP
+# $IPTABLES -t filter -A INPUT -m mark --mark 99 -j DROP
+# iptable -A PREROUTING -d 192.168.42.0/24 -p tcp -m tcp --dport 80 -j ACCEPT
+# iptables -A PREROUTING -p tcp -m tcp --dport 80 src -j DNAT --to-destination 192.168.42.1
 echo "1" > /proc/sys/net/ipv4/ip_forward
 #настройка нат
-$IPTABLES -A FORWARD -i eth0 -o eth0:1 -m state --state ESTABLISHED,RELATED -j ACCEPT
-$IPTABLES -A FORWARD -i eth0:1 -o eth0 -j ACCEPT
-$IPTABLES -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+# $IPTABLES -A FORWARD -i eth0 -o eth0:1 -m state --state ESTABLISHED,RELATED -j ACCEPT
+# $IPTABLES -A FORWARD -i eth0:1 -o eth0 -j ACCEPT
+# $IPTABLES -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 iw phy phy0 interface add wlan1 type station 
+
 dhcpcd wlan1   
 
 cd /root/theobject/gate/
+python3 -m olaplugin.wifi setup 
+python3 -m olaplugin.wifi restart 
 python3 -m olaplugin &
 exit 0

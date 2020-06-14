@@ -1,0 +1,7 @@
+#!/bin/sh -e
+FILE=/val/run/wpa.pid
+if test -f "$FILE"; then
+     cat $FILE | sudo xargs kill
+fi
+sleep 2
+killall -9 wpa_supplicant

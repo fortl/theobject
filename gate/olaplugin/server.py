@@ -106,8 +106,7 @@ def start():
     print('OpenSoundControl server port:', osc_port)
     send_osc_feedback(interface.serialize())
     app = web.Application(middlewares=[captive_portal])
-    setup_routes(app)
-    print(BASE_DIR);
+    setup_routes(app, BASE_DIR)
     aiohttp_jinja2.setup(app,
         loader=jinja2.FileSystemLoader(str(BASE_DIR  / 'templates')))
     app.on_startup.append(start_osc_service)

@@ -2,13 +2,16 @@
     body { 
       background:rgb(0,0,0);
       font-family: 'Oswald', sans-serif;
+      --primary: hsl(253, 94%, 68%);
+      --other: hsl(0, 0%, 90%);
     }
-    form { max-width:420px; margin:50px auto; }
+
+    form { max-width:90%; margin:50px auto; }
     .strip {
       margin-left:auto;
       margin-right:auto;
       width: 965px;
-      height: 450px;
+      height: 1200px;
       -moz-border-radius: 10px;
       -webkit-border-radius: 10px;
       border-radius: 10px;
@@ -34,21 +37,117 @@
       font-weight: 400;
       margin: 0px;
     }
+    
+    label {
+      color: #fff; 
+      font-size: 60px; 
+      font-weight: 400;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: nowrap;
+
+      margin: 12px 0;
+
+      cursor: pointer;
+      position: relative;
+    }
+ 
+    .radio {
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    }
+
+    /* .design */
+    .design {
+      width: 16px;
+      height: 16px;
+
+      border: 1px solid var(--other);
+      border-radius: 100%;
+      margin-right: 16px;
+
+      position: relative;
+    }
+
+    .design::before,
+    .design::after {
+      content: "";
+      display: block;
+
+      width: inherit;
+      height: inherit;
+
+      border-radius: inherit;
+
+      position: absolute;
+      transform: scale(0);
+      transform-origin: center center;
+    }
+
+    .design:before {
+      background: var(--other);
+      opacity: 0;
+      transition: .3s;
+    }
+
+    .design::after {
+      background: var(--primary);
+      opacity: .4;
+      transition: .6s;
+    }
+
+    /* checked state */
+    input:checked+.design::before {
+      opacity: 1;
+      transform: scale(.6);
+    }
+
+
+    /* other states */
+    input:hover+.design,
+    input:focus+.design {
+      border: 1px solid var(--primary);
+    }
+
+    input:hover+.design:before,
+    input:focus+.design:before {
+      background: var(--primary);
+    }
+
+    input:hover~.text {
+      color: var(--primary);
+    }
+
+    input:focus+.design::after,
+    input:active+.design::after {
+      opacity: .1;
+      transform: scale(2.6);
+    }
 
     .controls {
       color: #fff; 
-      padding-top: 20px;
-      font-size: 40px; 
+      padding-top: 80px;
+      font-size: 45px; 
       font-weight: 400;
       text-align: center;
       margin: 0px;
+    }
+
+    .chanel {
+      color: #fff; 
+      font-size: 60px; 
     }
 
     .feedback-input {
       color:white;
       font-family: 'Oswald', sans-serif;
       font-weight:500;
-      font-size: 18px;
+      font-size: 40px;
       border-radius: 5px;
       line-height: 22px;
       background: transparent;
@@ -78,24 +177,25 @@
       border:0;
       cursor:pointer;
       color:white;
-      font-size:24px;
-      padding-top:10px;
-      padding-bottom:10px;
+      font-size:50px;
+      padding-top:20px;
+      padding-bottom:20px;
       transition: all 0.3s;
-      margin-top:-4px;
+      margin-top:50px;
       font-weight:700;
     }
-    .btn{
+
+    .menu {
       color:#999;
       background:rgba(0, 0, 0, 0.5);
       padding:10px 20px;
-      font-size:20px;
+      font-size:45px;
       text-decoration:none;
       letter-spacing:2px;
       text-transform:uppercase;
     }
 
-    .btn:hover{
+    .menu:hover {
       border:none;
       background:rgba(0, 0, 0, 0.4);
       background:#fff;
@@ -106,21 +206,26 @@
     [type="submit"]:hover { background:rgb(88, 88, 172); }
 
     @media only screen and ( min-width: 768px ) and ( max-width: 1035px ) {
-      h1 { font-size: 100px; }
-      h2 { font-size: 70px; }
-      .strip { width: 736px !important; }
+      h1 { font-size: 180px; }
+      h2 label { font-size: 70px; }
+      .menu { font-size: 35px; }
+      .chanel { font-size: 70px; }
+      .strip { width: 768px !important; }
     }
 
     @media only screen and ( max-width: 804px ) {
-      h1 { font-size: 90px; }
-      h2 { font-size: 60px; }
-      .strip { width: 450px !important; }
+      h1 { font-size: 120px; }
+      h2 label { font-size: 60px; }
+      .menu { font-size: 28px; }
+      .chanel { font-size: 50px; }
+      .strip { width: 550px !important; }
     }
 
     @media only screen and ( max-width: 517px ) {
       h1 { font-size: 70px; }
-      h2 { font-size: 45px; }
-      .strip { width: 295px !important; }
-      .controls { font-size: 25px !important; }
+      h2 label { font-size: 45px; }
+      .menu { font-size: 15px; padding:5px 5px; }
+      .chanel { font-size: 30px; }
+      .strip { width: 350px !important; }
     }
 </style>

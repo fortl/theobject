@@ -1,15 +1,16 @@
 from olaplugin.interface import channels_block
+from olaplugin.net_helper import ip_list
+from olaplugin.config import config, save_config
 
 from aiohttp import web
 import aiohttp_jinja2
 import asyncio
 import re
 
-async def index1(request):
-    return asyncio.web.Response(text='Hello Aiohttp!')
-
 @aiohttp_jinja2.template('light.html')
 async def light(request):
+    if request.url.host not in ip_list:
+        raise web.HTTPFound(location='http://192.168.42.1/')
     return {}
 
 @aiohttp_jinja2.template('wifi.html')
@@ -28,10 +29,18 @@ async def wifi(request):
     nets = [ parse_wifi_string(net) 
         for net in re.split(r'BSS \S+\(on wlan.?\)', str(stdout), flags=re.M) ]
     nets = [i for i in nets if i] 
-    return { "ssid_list": nets }
+    return { "ssid_list": nets, "config": config }
+
+async def set_wifi(request):
+    print(await request.post())
+    raise web.HTTPFound(location=request.app.router['wifi'].url_for())
 
 @aiohttp_jinja2.template('touchosc.html')
 async def touchosc(request):
+    return {}
+
+@aiohttp_jinja2.template('settings.html')
+async def settings(request):
     return {}
 
 async def set_channel(request):

@@ -1,0 +1,2 @@
+#!/bin/sh -e
+wpa_supplicant -iwlan1 -c/etc/wpa_supplicant/wpa_supplicant.conf -P/val/run/wpa.pid -B

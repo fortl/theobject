@@ -2,15 +2,17 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
+  <script src="/static/jquery-3.5.1.slim.min.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Oswald:300' rel='stylesheet' type='text/css'>
   {% include 'styles.html' %}
     <body>
     <h1>TheObject</h1>    
     <div class="strip">
       <div class="controls">
-        <a href="/" class="btn">Light</a>
-        <a href="/wifi" class="btn">WiFi</a>
-        <a href="/touchosc" class="btn">TouchOSC</a>
+        <a href="/" class="menu">Light</a>
+        <a href="/wifi" class="menu">WiFi</a>
+        <a href="/touchosc" class="menu">TouchOSC</a>
+        <a href="/settings" class="menu">Settings</a>
       </div>
       {% block body %}
       {% endblock %}

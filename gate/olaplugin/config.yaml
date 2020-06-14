@@ -1,0 +1,12 @@
+platform: armbian
+hotspot: 
+  default:
+    ssid: TheObject
+    passwd: 12345678
+  current:
+    ssid: TheObject
+    passwd: 12345678
+wifi:
+  ssid: 
+  passwd: 
+wifi_mode: 'hotspot'

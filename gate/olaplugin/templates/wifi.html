@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
 {% block body %}
-  <form method="POST">
-  <h2>Wifi networks</h2>
-    <select name="ssid" class="feedback-input">
-      <option value="">-- SSID</option>
+  <form method="post">
+    <label for="wifiModeHotspot">
+      <input type="radio" id="wifiModeHotspot" name="wifiMode" value="hotspot" class="radio" {% if config['wifi_mode'] == 'hotspot' %}checked{% endif %}>
+      <span class="design"></span>
+      <span class="text">Hotspot</span>
+    </label>
+    <input name="hotspot_ssid" id="hotspot_ssid" placeholder="Hotspot SSID" value="{{ config['hotspot']['current']['ssid'] }}" class="feedback-input" />
+    <input name="passwd" id="passwd" placeholder="Hotspot password" value="{{ config['hotspot']['current']['passwd'] }}" class="feedback-input" />  
+    <label for="wifiModeClient">
+      <input type="radio" id="wifiModeClient" name="wifiMode" value="client" class="radio" {% if config['wifi_mode'] == 'client' %}checked{% endif %}>
+      <span class="design"></span>
+      <span class="text">Connect to Wifi</span>
+    </label>
+    <select name="ssid" class="feedback-input" onChange="if( $(this).val() == 'manualy'){ $('#manual_ssid').show() }else{ $('#manual_ssid').hide() }">
+      <option value="" {% if not config['wifi']['ssid'] %}checked{% endif %}>-- SSID</option>
       {% for item in ssid_list %}
-      <option value="{{ item.ssid }}">{{ item.ssid }}</option>
+      <option value="{{ item.ssid }}" {% if (item.ssid == config['wifi']['ssid']) %}checked{% endif %}>{{ item.ssid }}</option>
       {% endfor %}
+      <option value="manualy" {% if (config['wifi']['ssid'] not in ssid_list) %}checked{% endif %}>--- Enter manualy</option>
       </select>
-      <input type="submit" value="SUBMIT"/>
+      <input name="manual_ssid" id="manual_ssid" placeholder="Enter SSID" class="feedback-input" style="display:none;" />
+      <input name="passwd" id="passwd" placeholder="Enter password" value="{{ config['wifi']['passwd'] or '' }}" class="feedback-input" />
+      <input type="submit" value="SAVE"/>
   </form>
 {% endblock %}

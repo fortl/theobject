@@ -11,4 +11,4 @@ async def captive_portal(request, handler):
         if ex.status != 404:
             raise
         message = ex.reason
-    raise web.HTTPFound(location=request.app.router['light'].url_for())
+    raise web.HTTPFound(location='http://192.168.42.1/')

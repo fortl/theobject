@@ -30,7 +30,7 @@ channels_block = channels_controls.Channels(
             speed=channels_controls.StroboSpeed(.2, 'stroboSpeed', 'stroboBPM')),
         'lfo': channels.LFO(theobject.LED_COUNT, 
             brightness=channels_brightness, 
-            speed=Value(.3, 'lfoSpeed'),
+            speed=Value(.1, 'lfoSpeed'),
             scale=Value(.2, 'lfoScale'), 
             waveform=channels_controls.WaveformSwitcher(0, 'lfoWaveform')),
         'strips': channels.Strips(theobject.LED_COUNT, 
