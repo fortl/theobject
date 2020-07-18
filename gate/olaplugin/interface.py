@@ -15,6 +15,11 @@ master_brightness = Value(1, 'master')
 blackout = Value(0, 'blackout')
 channels_brightness = Value(1, 'brightness')
 artnet_channel = channels.Artnet(theobject.LED_COUNT)
+sound_reactive_effect = effects.Sound(theobject.LED_COUNT,
+    sensitivity=Value(0.5, 'sensitivity'),
+    brightness=Value(1, 'brightness'),
+    freq=Value(0, 'freq'))
+
 channels_block = channels_controls.Channels(
     'channels', MODE_GROUPS_COUNT, 'artnet', 
     channels_controls.Groups(
@@ -58,6 +63,7 @@ effects_block = effects_controls.Effects(
             fade=Value(.7, 'fade'),
             brightness=Value(1, 'brightness'),
             units=Value(.4, 'units')),
+        'sound': sound_reactive_effect,
     })
 
 def handle_message(address, value):

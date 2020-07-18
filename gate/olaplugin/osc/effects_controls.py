@@ -19,9 +19,11 @@ class Groups(Control):
         self.init_values()
 
     def init_values(self):
-        for i in range(int(self.units_count/2)):
-            self.values[0][i*2] = 1
-            self.values[1][i*2 + 1] = 1
+        for i in range(self.units_count):
+            self.values[i%self.groups_count][i] = 1
+        # for i in range(int(self.units_count/2)):
+        #     self.values[0][i*2] = 1
+        #     self.values[1][i*2 + 1] = 1
 
     def osc_address_prefixes(self):
         return [block['address'] for block in self.blocks]
@@ -112,13 +114,16 @@ class Selector(Control):
     def __init__(self, groups_count: int, name: str=''):
         self.address = name
         self.groups_count = groups_count
-        self.values = [0] * groups_count
-        self.groups = set()
+        self.set_all()
         self.tapped = False
 
     def osc_address_prefixes(self):
         return [self.address]
-        
+
+    def clear_all(self):
+        self.values = [0] * groups_count
+        self.groups = set()
+
     def set_all(self):
         self.values = [1] * self.groups_count
         self.groups = set(i for i in range(self.groups_count))

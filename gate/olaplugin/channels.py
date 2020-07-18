@@ -25,6 +25,19 @@ class Artnet(NoneChannel):
         for unit in units:
             data[unit] = self.values[unit]
 
+class Sound(NoneChannel):
+    def __init__(self, units_count: int):
+        super().__init__()
+        self.units_count = units_count
+        self.values = [0]*units_count
+    
+    def set_data(self, data):
+        self.values = data
+
+    def set_units(self, data, units):
+        for unit in units:
+            data[unit] = self.values[unit]
+
 class Light(NoneChannel):
     def __init__(self, units_count: int, brightness=Control):
         super().__init__(brightness)

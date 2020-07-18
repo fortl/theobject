@@ -13,6 +13,7 @@ from pythonosc.dispatcher import Dispatcher
 from pythonosc.udp_client import SimpleUDPClient
 
 import olaplugin.theobject as theobject
+import olaplugin.sound as sound
 import olaplugin.net_helper as net_helper
 import olaplugin.interface as interface
 from olaplugin.routes import setup_routes
@@ -45,6 +46,9 @@ async def periodic_units_updates():
 
 def artnet_data(data):
     interface.artnet_channel.set_data(data)
+
+def sound_data(timeline, average):
+    interface.sound_reactive_effect.set_data(timeline, average)
 
 def send_osc_feedback(osc_feedback):
     for osc_client in osc_clients:
@@ -102,6 +106,11 @@ async def start_artnet_service(app):
     pool = concurrent.futures.ThreadPoolExecutor()
     loop.run_in_executor(pool, blocking_artnet)
 
+async def start_sound_processor(app):
+    loop = asyncio.get_event_loop()
+    pool = concurrent.futures.ThreadPoolExecutor()
+    loop.run_in_executor(pool, sound.start_analize(sound_data))
+
 def start():
     print('OpenSoundControl server port:', osc_port)
     send_osc_feedback(interface.serialize())
@@ -111,4 +120,5 @@ def start():
         loader=jinja2.FileSystemLoader(str(BASE_DIR  / 'templates')))
     app.on_startup.append(start_osc_service)
     app.on_startup.append(start_artnet_service)
+    app.on_startup.append(start_sound_processor)
     web.run_app(app, port=80)
