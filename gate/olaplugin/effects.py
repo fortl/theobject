@@ -1,6 +1,8 @@
 import random 
 import math
 
+from olaplugin.config import config
+
 class Effect:
     def __init__(self, *controls):
         self.controls = controls
@@ -29,7 +31,8 @@ class FlashRandom(Effect):
     def loop(self, data, units):
         if all(v == 0 for v in self.values):
             return
-        fade_value = 150 * self.fade.get_value() + 5
+        interval = config['leds']['update_interval']
+        fade_value = (150*self.fade.get_value() + 5)*interval*5
         for unit in units:
             self.set_data_unit(data, unit)
             self.values[unit] -= fade_value 
@@ -56,7 +59,8 @@ class FlashSparks(Effect):
     def loop(self, data, units):
         if self.value is 0:
             return
-        self.value -= 50 * self.fade.get_value() + 5
+        interval = config['leds']['update_interval']
+        self.value -= (50 * self.fade.get_value() + 5)*interval*5
         if self.value < 0:
             self.value = 0
         self.set_data_units(data, units)

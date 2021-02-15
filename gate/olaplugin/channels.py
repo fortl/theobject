@@ -1,16 +1,21 @@
 import time
 import math
 from olaplugin.osc.controls import Control 
+from olaplugin.config import config
 
 MIN_STROBE_INTERVAL = .1
 
 class NoneChannel:
     def __init__(self, *controls):
         self.controls = controls
+        self.first_control = controls[0] if controls else None
         pass
 
     def set_units(self, data, units):
         pass
+
+    def get_first_control(self):
+        return self.first_control
 
 class Artnet(NoneChannel):
     def __init__(self, units_count: int):
@@ -49,22 +54,22 @@ class Light(NoneChannel):
         for unit in units:
             data[unit] = int(value*255)
 
+    def get_first_control(self):
+        return None
+
 class Strobo(NoneChannel):
     def __init__(self, units_count: int, brightness=Control, speed=Control):
-        super().__init__(brightness, speed)
+        super().__init__(speed, brightness)
         self.units_count = units_count
         self.brightness = brightness
         self.speed = speed
         self.state = 1
 
-    def half_intervals_since_last_tap(self):
-        return math.floor((time.time() - self.speed.last_tap)*2 / (self.speed.interval))
+    def half_interval_since_last_tap(self):
+        return math.floor((time.time() - self.speed.last_tap)*2 / (self.speed.interval+MIN_STROBE_INTERVAL))
 
     def set_units(self, data, units):
-        if self.speed.interval > MIN_STROBE_INTERVAL:
-            self.state = (self.half_intervals_since_last_tap())%2
-        else:
-            self.state = 0 if self.state == 1 else 1
+        self.state = (self.half_interval_since_last_tap()+1)%2
 
         value = self.brightness.get_value() if self.brightness else 1
         for unit in units:
@@ -72,7 +77,7 @@ class Strobo(NoneChannel):
 
 class Strips(NoneChannel):
     def __init__(self, units_count: int, brightness=None, speed=None, scale=None, width=None):
-        super().__init__(brightness, speed, scale, width)
+        super().__init__(width, speed, scale, brightness)
         self.units_count = units_count
         self.brightness = brightness
         self.speed = speed
@@ -82,8 +87,9 @@ class Strips(NoneChannel):
     
     def set_units(self, data, units):
         value = self.brightness.get_value() if self.brightness else 1
-        self.time += .01 + self.speed.value /10
-        scale = self.scale.value / 5
+        interval = config['leds']['update_interval']
+        self.time += interval/20 + self.speed.value*interval/2
+        scale = self.scale.value/5
         for unit in units:
             if math.modf(self.time + unit*scale)[0] > (self.width.value*.85 + .05):
                 data[unit] = int(255*value)
@@ -92,7 +98,7 @@ class Strips(NoneChannel):
 
 class LFO(NoneChannel):
     def __init__(self, units_count: int, brightness=None, speed=None, scale=None, waveform=None):
-        super().__init__(brightness, speed, scale, waveform)
+        super().__init__(speed, scale, waveform, brightness)
         self.units_count = units_count
         self.brightness = brightness
         self.speed = speed
@@ -102,7 +108,8 @@ class LFO(NoneChannel):
     
     def set_units(self, data, units):
         value = self.brightness.get_value() if self.brightness else 1
-        self.time += (self.speed.value-.5)
+        interval = config['leds']['update_interval']
+        self.time += (self.speed.value-.49)*interval*15
         scale = self.scale.value / 2
         if self.waveform.state == 0:
             for unit in units:

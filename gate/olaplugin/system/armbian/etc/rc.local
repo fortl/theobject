@@ -43,7 +43,7 @@ iw phy phy0 interface add wlan1 type station
 dhcpcd wlan1   
 
 cd /root/theobject/gate/
-python3 -m olaplugin.wifi setup 
-python3 -m olaplugin.wifi restart 
-python3 -m olaplugin &
+python3 -m olaplugin.system setup 
+python3 -m olaplugin.system restart_wifi
+systemctl start theobject
 exit 0

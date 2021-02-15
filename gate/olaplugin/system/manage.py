@@ -27,7 +27,7 @@ async def hotspot(status):
     else:
         await run('/etc/wifi-manage-scripts/hotspot-start')
 
-async def restart(mode):
+async def restart_wifi(mode):
     await client('stop')
     await hotspot('stop')
     if mode == 'hotspot':

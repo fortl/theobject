@@ -1,9 +1,12 @@
+from collections import OrderedDict
+
 import olaplugin.osc.channels_controls as channels_controls
 import olaplugin.osc.effects_controls as effects_controls
 from olaplugin.osc.controls import Value
 import olaplugin.channels as channels
 import olaplugin.effects as effects
 import olaplugin.theobject as theobject
+from olaplugin.uart_proxy import uart_proxy
 
 """ Interface Declaration """
 
@@ -21,7 +24,7 @@ sound_reactive_effect = effects.Sound(theobject.LED_COUNT,
     freq=Value(0, 'freq'))
 
 channels_block = channels_controls.Channels(
-    'channels', MODE_GROUPS_COUNT, 'artnet', 
+    'channels', MODE_GROUPS_COUNT, ['artnet', 'light', 'strobo', 'lfo', 'strips'], 
     channels_controls.Groups(
         units_count = theobject.LED_COUNT, 
         groups_count = MODE_GROUPS_COUNT,
@@ -35,14 +38,14 @@ channels_block = channels_controls.Channels(
             speed=channels_controls.StroboSpeed(.2, 'stroboSpeed', 'stroboBPM')),
         'lfo': channels.LFO(theobject.LED_COUNT, 
             brightness=channels_brightness, 
-            speed=Value(.1, 'lfoSpeed'),
+            speed=Value(.35, 'lfoSpeed'),
             scale=Value(.2, 'lfoScale'), 
             waveform=channels_controls.WaveformSwitcher(0, 'lfoWaveform')),
         'strips': channels.Strips(theobject.LED_COUNT, 
             brightness=channels_brightness,
             speed=Value(.5, 'stripsSpeed'),
             scale=Value(.75, 'stripsScale'),
-            width=Value(.5, 'stripsWidth')),
+            width=Value(.8, 'stripsWidth')),
     })
 
 effects_block = effects_controls.Effects(
@@ -65,6 +68,18 @@ effects_block = effects_controls.Effects(
             units=Value(.4, 'units')),
         'sound': sound_reactive_effect,
     })
+
+def button_clicked():
+    channel = channels_block.select_next_channel()
+    if channel:
+        control = channel.get_first_control()
+        if not control:
+            control = master_brightness
+        uart_proxy.set_observe_encoder(lambda inc: control.encoder_inc(inc))
+
+uart_proxy.set_observe_encoder_pushed(lambda inc: master_brightness.encoder_inc(inc))
+uart_proxy.set_observe_encoder(lambda inc: master_brightness.encoder_inc(inc))
+uart_proxy.set_observe_button(button_clicked)
 
 def handle_message(address, value):
     return channels_block.message(address, value)\

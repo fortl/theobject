@@ -1,0 +1,17 @@
+[Unit]
+Description=TheObject
+
+[Service]
+Type=simple
+PIDFile=/root/theobject/gate/log/service.pid
+WorkingDirectory=/root/
+
+User=root
+Group=root
+
+OOMScoreAdjust=-1000
+
+ExecStart=/usr/bin/python3 -m theobject.gate.olaplugin
+
+[Install]
+WantedBy=multi-user.target 

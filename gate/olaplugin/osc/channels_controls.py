@@ -34,22 +34,27 @@ class Channels(Control):
      |./channel1/|     |./channel2/|
     """
     def __init__(self, controls_prefix: str, groups_count: int, 
-                default_channel: str, groups: Groups, channels):
+                main_channels, groups: Groups, channels):
         self.channels = channels 
         self.groups_count = groups_count
-        self.set_all(default_channel)
+        self.main_channels = main_channels
+        self.set_all(main_channels[0])
+        self.last_setall_channel = main_channels[0]
+        
         self.controls = list(set(c for channel in channels.values() for c in channel.controls))
         self.controls.append(groups)
         self.groups_controll = groups
         self.controls_prefix = controls_prefix
 
     def set_all(self, selected_channel):
+        self.last_setall_channel = selected_channel
         self.values = { channel: [0] * self.groups_count for channel in self.channels.keys()}
         self.values[selected_channel] = [1] * self.groups_count
         self.groups = {channel: set() for channel in self.channels.keys()}
         self.groups[selected_channel] = set(i for i in range(self.groups_count))
 
     def set_group(self, selected_channel: str, group_id: int):
+        self.last_setall_channel = self.main_channels[-1]
         for groups in self.values.values():
             groups[group_id] = 0
         self.values[selected_channel][group_id] = 1
@@ -96,10 +101,18 @@ class Channels(Control):
         for channel, handler in self.channels.items():
             units = self.groups_controll.get_units(self.groups[channel])
             handler.set_units(data, units)
+    
+    def select_next_channel(self):
+        index = self.main_channels.index(self.last_setall_channel)+1
+        if index == len(self.main_channels):
+            index = 0 
+        channel_name = self.main_channels[index]
+        self.set_all(channel_name)
+        return self.channels[channel_name]
 
 class StroboSpeed(Control):
     def __init__(self, value, value_address, tap_address):
-        self.value = value
+        self.value = value # 0 .. 1
         self.interval = MAX_STROBO_BPM*value
         self.value_address = value_address
         self.tap_address = tap_address
@@ -136,6 +149,14 @@ class StroboSpeed(Control):
                     for i in range(len(self.tap_times)-1)])
             self.value = self.interval/MAX_STROBO_BPM
 
+    def encoder_inc(self, inc):
+        self.last_tap = time.time()
+        self.value += inc/50
+        if self.value > 1:
+            self.value = 1
+        if self.value < 0:
+            self.value = 0
+        self.interval = MAX_STROBO_BPM*self.value
 
     def get_value(self):
         return self.value

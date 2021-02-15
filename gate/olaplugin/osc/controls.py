@@ -32,6 +32,13 @@ class Value(Control):
     def handle_message(self, address, value):
         self.value = value
         return Feedback()
+    
+    def encoder_inc(self, inc):
+        self.value += inc/50
+        if self.value > 1:
+            self.value = 1
+        if self.value < 0:
+            self.value = 0
 
     def get_value(self):
         return self.value**2

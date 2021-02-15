@@ -1,12 +1,27 @@
-platform: armbian
+platform: 'armbian'
 hotspot: 
   default:
-    ssid: TheObject
-    passwd: 12345678
+    ssid: 'TheObject'
+    passwd: '12345678'
   current:
-    ssid: TheObject
-    passwd: 12345678
+    ssid: 'TheObject'
+    passwd: '12345678'
 wifi:
   ssid: 
   passwd: 
 wifi_mode: 'hotspot'
+osc:
+  ip: '0.0.0.0'
+  port: 9000
+  address_prefix: '/theobject/'
+  update_interval_seconds: 2
+  update_debounce: .2
+  client:
+    port: 9000
+    ip: '255.255.255.255'
+artnet:
+  universe: 1
+leds:
+  update_interval: .01
+uart_proxy:
+  enable_pin: 7

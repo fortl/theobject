@@ -6,7 +6,7 @@ RATE = 44100 # time resolution of the recording device (Hz)
 TIME_INTERVAL = CHUNK/RATE
 TIMELINE_LEN = 30
 
-DEVICE = 0 # default
+DEVICE = 3 # default
 SLICES_COUNT = 5
 S_SHIFT = 10
 S_LEN = int((CHUNK/2)/SLICES_COUNT) 
@@ -21,7 +21,11 @@ def blocking_analize():
     global timeline, average
     p = pyaudio.PyAudio()
 
-    stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True, input_device_index=DEVICE,
+    stream=p.open(format=pyaudio.paInt16, 
+                channels=1, 
+                rate=RATE, 
+                input=True, 
+                input_device_index=DEVICE,
                 frames_per_buffer=CHUNK)
 
     while True:
@@ -34,6 +38,7 @@ def blocking_analize():
         intervals = [
             np.max(fftData[S_SHIFT+i+S_LEN*i:S_SHIFT+i+S_LEN*(i+1)-1])
                 for i in range(SLICES_COUNT)]
+        # print(intervals)
         timeline.pop(-1)
         timeline.insert(1, intervals)
         average=[(av + x*FADING)/(FADING+1) for (av, x) in zip(average, intervals)]
