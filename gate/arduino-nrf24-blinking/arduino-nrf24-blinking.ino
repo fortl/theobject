@@ -27,13 +27,16 @@ int value = 0;
 void setTheObjectLedLine (uint8_t * data) {
   for (uint8_t groupId = 0; groupId < LED_GROUPS_COUNT; groupId++) {
     struct package buffer;
-    buffer.address = groupId << 4 | 0x80;
+    buffer.address = groupId << 4 | 0x08;
     for (uint8_t i = 0; i < GROUPS_ITEMS; i++) {  
       uint8_t value = data[i + GROUPS_ITEMS * groupId];
-      buffer.values[i+1] = value >= 254 ? 255 : (1 + value);
+      buffer.values[i] = value >= 254 ? 255 : (1 + value);
     }
+//    radio.writeFast(&buffer, sizeof(buffer));
+    
     radio.write(&buffer, sizeof(struct package));
   }
+//  radio.txStandBy();
 }
 
 void setup() {  
